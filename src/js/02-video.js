@@ -4,17 +4,19 @@ import throttle from 'lodash.throttle';
 const iframe = document.querySelector('iframe');
 const player = new Player(iframe);
 
-function onCurrentTime(data) {
+const setTime = function (data) {
   localStorage.setItem('videoplayer-current-time', data.seconds);
-}
+};
 
-player.on('timeupdate', throttle(onCurrentTime, 1000));
+player.on('timeupdate', throttle(setTime, 1000));
 
-function onPlayTime(data) {
-  const stopedTime = localStorage.getItem('videoplayer-current-time');
-  if (data.seconds !== stopedTime) {
-    player.setCurrentTime(stopedTime);
+const onPlay = function (data) {
+  if (localStorage.length !== 0) {
+    player.setCurrentTime(localStorage.getItem('videoplayer-current-time'));
   }
-}
+  if (localStorage.length === 0) {
+    player.setCurrentTime(data.seconds);
+  }
+};
 
-player.on('play', onPlayTime);
+player.on('play', onPlay);
